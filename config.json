@@ -1,0 +1,355 @@
+{
+	"name": "Survey eSignature Certification",
+
+	"namespace": "Partners\\esigcert",
+
+	"framework-version": 6,
+
+	"authors": [
+		{
+			"name": "Eduardo Morales",
+			"email": "em@partners.org",
+			"institution": "PHS"
+		}
+	],
+
+	"permissions": [
+		"redcap_survey_page",
+		"redcap_save_record",
+		"hook_every_page_top",
+		"redcap_data_entry_form"
+	],
+
+	"no-auth-pages":["esig_service"],
+
+	"description": "Add an electronic signature certification/attestation feature to your surveys including features of custom logging history and survey (PDF) archiving, and special server-side processing for large surveys that disrupt user experience. The features in this module aim to streamline the eSignature certification by optimizing user-experience, customizing the logging and archival process. The module provides the option for specifying your own certification language or use the system-wide language recommended by your institution. All logging history and archival of survey PDF files are kept in the project's Logging and File Repository modules.",
+
+	"system-settings": [
+		{
+			"key": "set-language",
+			"name": "Set the system wide default languages",
+			"required": true,
+			"type": "sub_settings",
+			"repeatable":true,
+			"sub_settings":[
+				{
+					"key": "sw-lan-name",
+					"name": "<b>Default attestation settings</b>",
+					"required": true,
+					"type": "dropdown",
+					"repeatable":false,
+					"choices": [
+						{ "value": "en", "name": "English" },
+						{ "value": "sp", "name": "Spanish" }
+					]
+				},
+				{
+					"key": "sw-submit-btn",
+					"name": "Instrument submit button",
+					"required": false,
+					"allow-project-overrides": false,
+					"type": "textbox",
+					"branchingLogic": {
+						"field": "attestation_setting",
+						"value": "1"
+					}
+				},
+				{
+					"key": "sw-attestation-title",
+					"name": "Attestation title",
+					"required": false,
+					"allow-project-overrides": false,
+					"type": "textbox",
+					"branchingLogic": {
+						"field": "attestation_setting",
+						"value": "1"
+					}
+				},
+				{
+					"key": "sw-attestation-lang",
+					"name": "Attestation paragraph",
+					"required": false,
+					"allow-project-overrides": false,
+					"type": "textarea"
+				},
+				{
+					"key": "sw-attestation_review_text",
+					"name": "Review text",
+					"required": false,
+					"allow-project-overrides": false,
+					"type": "textbox"
+				},
+				{
+					"key": "sw-attestation_review_button",
+					"name": "Review button text",
+					"required": false,
+					"allow-project-overrides": false,
+					"type": "textbox"
+				},
+				{
+					"key": "sw-attestation_submit_button",
+					"name": "Submit button text",
+					"required": false,
+					"allow-project-overrides": false,
+					"type": "textbox"
+				}
+			]
+		}
+	],
+
+	"project-settings": [
+		{
+			"key": "main_desc",
+			"name": "<b>Adjust the following settings by specifying:</b><br><ol><li><b>Attestation settings:</b></li><ul><li>Institution-Defined: Attestation language and labels defined by Institution and REDCap Admin (see documentation)</li><li>User-Defined: Define your own attestation language and labels within the module configurations</li><li>User-Defined & Controlled by MLM: use this option to define your own attestation and add your own labels to MLM.</li></ul><li><b>Server-Side PDF Processing:</b> optimize user-experience by generating the PDF Archive file server-side. The resulting PDF file will be placed on the Project's \"PDF Survey Archive\" tab.</li><li>Instrument settings: Add and define settings for each survey that requires an eSignature Certification</li><ol><li><b>Attestation Instrument</b> - instrument name in which the survey eSignature attestation is needed</li><li><b>Attestation Language</b> - select institution defined language or set your own</li><li><b>Logging of attestation</b> - check enable to add logging of attestation to project's logging module<ul><li><b>Logging of Custom Identifier (username):</b> Select the field that contains an identifier to add to logging instead of \"survey respondent\"</li></ul></li></li><li><b>PDF Survey Archival</b> - check enable to generate and archive the survey's response of this instrument. The resulting PDF file will be placed on the Project's \"PDF Survey Archive\" tab.</li><li><b>PDF Survey Distribution</b> - check enable to upload survey PDF to an upload field.<ul><li>Select field for storing Survey PDF file:</b> Select the field to upload survey PDF</li></ul></li></ol>",
+			"required": false,
+			"allow-project-overrides": false,
+			"type": "descriptive"
+		},
+		{
+			"key": "attestation_setting",
+			"name": "<b>Attestation settings</b>",
+			"required": true,
+			"type": "radio",
+			"repeatable":false,
+			"choices": [
+				{ "value": "0", "name": "Institution-Defined" },
+				{ "value": "1", "name": "User-Defined" },
+				{ "value": "2", "name": "User-Defined & Controlled by MLM" }
+			]
+		},
+		{
+			"key": "user-define-language-id",
+			"name": "Language ID",
+			"required": false,
+			"allow-project-overrides": false,
+			"type": "textbox",
+			"branchingLogic": {
+				"type": "or",
+				"conditions": [
+					{
+						"field": "attestation_setting",
+						"op": "=",
+						"value": "2"
+					}
+				]
+			}
+		},
+		{
+			"key": "instrument_submit_btn",
+			"name": "Instrument submit button",
+			"required": false,
+			"allow-project-overrides": false,
+			"type": "textbox",
+			"branchingLogic": {
+				"type": "or",
+				"conditions": [
+					{
+						"field": "attestation_setting",
+						"op": "=",
+						"value": "1"
+					},
+					{
+						"field": "attestation_setting",
+						"op": "=",
+						"value": "2"
+					}
+				]
+			}
+		},
+		{
+			"key": "attestation_title",
+			"name": "Attestation title",
+			"required": false,
+			"allow-project-overrides": false,
+			"type": "textbox",
+			"branchingLogic": {
+				"type": "or",
+				"conditions": [
+					{
+						"field": "attestation_setting",
+						"op": "=",
+						"value": "1"
+					},
+					{
+						"field": "attestation_setting",
+						"op": "=",
+						"value": "2"
+					}
+				]
+			}
+		},
+		{
+			"key": "attestation_lang",
+			"name": "Attestation paragraph",
+			"required": false,
+			"allow-project-overrides": false,
+			"type": "textarea",
+			"branchingLogic": {
+				"type": "or",
+				"conditions": [
+					{
+						"field": "attestation_setting",
+						"op": "=",
+						"value": "1"
+					},
+					{
+						"field": "attestation_setting",
+						"op": "=",
+						"value": "2"
+					}
+				]
+			}
+		},
+		{
+			"key": "attestation_review_text",
+			"name": "Review text",
+			"required": false,
+			"allow-project-overrides": false,
+			"type": "textbox",
+			"branchingLogic": {
+				"type": "or",
+				"conditions": [
+					{
+						"field": "attestation_setting",
+						"op": "=",
+						"value": "1"
+					},
+					{
+						"field": "attestation_setting",
+						"op": "=",
+						"value": "2"
+					}
+				]
+			}
+		},
+		{
+			"key": "attestation_review_button",
+			"name": "Review button text",
+			"required": false,
+			"allow-project-overrides": false,
+			"type": "textbox",
+			"branchingLogic": {
+				"type": "or",
+				"conditions": [
+					{
+						"field": "attestation_setting",
+						"op": "=",
+						"value": "1"
+					},
+					{
+						"field": "attestation_setting",
+						"op": "=",
+						"value": "2"
+					}
+				]
+			}
+		},
+		{
+			"key": "attestation_submit_button",
+			"name": "Submit button text",
+			"required": false,
+			"allow-project-overrides": false,
+			"type": "textbox",
+			"branchingLogic": {
+				"type": "or",
+				"conditions": [
+					{
+						"field": "attestation_setting",
+						"op": "=",
+						"value": "1"
+					},
+					{
+						"field": "attestation_setting",
+						"op": "=",
+						"value": "2"
+					}
+				]
+			}
+		},
+		{
+			"key": "enable_cron_esign",
+			"name": "<b>Server-Side PDF processing</b>",
+			"required": true,
+			"type": "radio",
+			"repeatable":false,
+			"choices": [
+				{ "value": "1", "name": "Enable" },
+				{ "value": "0", "name": "Disable" }
+			]
+		},
+		{
+			"key": "instruments-settings",
+			"name": "Instrument Settings:",
+			"required": true,
+			"type": "sub_settings",
+			"repeatable":true,
+			"sub_settings":[
+				{
+					"key": "esignform",
+					"name": "<b>Attestation Instrument</b>",
+					"required": true,
+					"allow-project-overrides": false,
+					"type": "form-list",
+					"repeatable":false
+				},
+				{
+					"key": "attestation-language",
+					"name": "<b>Attestation Language</b>",
+					"required": true,
+					"allow-project-overrides": false,
+					"type": "dropdown",
+					"repeatable":false,
+					"choices": [
+						{ "value": "en", "name": "Only English" },
+						{ "value": "sp", "name": "Only Spanish" },
+						{ "value": "mlm_c", "name": "controlled by MLM"},
+						{ "value": "usr_defined", "name": "User defined"}
+					]
+				},
+				{
+					"key": "enable_logging",
+					"name": "<b>Logging of attestation</b>",
+					"allow-project-overrides": false,
+					"type": "checkbox",
+					"repeatable":false
+				},
+				{
+					"key": "custom_identifier",
+					"name": "<b>Logging Custom Identifier (Username)</b>",
+					"allow-project-overrides": false,
+					"type": "field-list",
+					"repeatable":false,
+					"branchingLogic": {
+						"field": "enable_logging",
+						"value": "T"
+					}
+				},
+				{
+					"key": "enable_survey_archive",
+					"name": "<b>PDF Survey Archival</b>",
+					"allow-project-overrides": false,
+					"type": "checkbox",
+					"repeatable":false
+				},
+				{
+					"key": "enable_distribution",
+					"name": "<b>eConsent Distribution</b>",
+					"allow-project-overrides": false,
+					"type": "checkbox",
+					"repeatable":false
+				},
+				{
+					"key": "distribution_field",
+					"name": "Select field for storing eConsent PDF file",
+					"required": false,
+					"allow-project-overrides": false,
+					"type": "field-list",
+					"branchingLogic": {
+						"field": "enable_distribution",
+						"value": "T"
+					}
+				}
+			]
+		}
+	]
+}
